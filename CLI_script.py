@@ -76,7 +76,6 @@ def insert_data(connection):
         billing_amount = float(input("Enter Billing Amount (optional): ")) or None
     except ValueError:
         billing_amount = None
-        print("Invalid input for billing amount. Skipping.")
 
     # Insert data into BloodGroup table
     bloodgroup_insert_stmt = "INSERT INTO BloodGroup (BloodType) VALUES (%s) RETURNING BloodTypeID;"
@@ -90,7 +89,7 @@ def insert_data(connection):
 
     # Insert data into InsuranceProvider (if provided)
     insurance_number = input("Enter Insurance Number: ") or None
-    insurance_insert_stmt = "INSERT INTO InsuranceProvider (PatientID, InsuranceNumber, InsuranceProviderName) VALUES (%s, %s, %s)"
+    insurance_insert_stmt = "INSERT INTO InsuranceProvider (PatientID, InsuranceNumber, InsuranceProviderName) VALUES (%s, %s, %s);"
     cursor.execute(insurance_insert_stmt, (patient_id, insurance_number, insurance_provider))
 
     # Insert data into Test table
@@ -105,7 +104,7 @@ def insert_data(connection):
     hospital_id = cursor.fetchone()[0]
 
     # Insert data into Room table
-    room_insert_stmt = "INSERT INTO Room (HospitalID, RoomNumber) VALUES (%s, %s)"
+    room_insert_stmt = "INSERT INTO Room (HospitalID, RoomNumber) VALUES (%s, %s);"
     cursor.execute(room_insert_stmt, (hospital_id, room_number))
 
     # Insert data into Doctor table
@@ -124,56 +123,57 @@ def insert_data(connection):
     medication_id = cursor.fetchone()[0]
 
     # Insert data into Admission table
-    admission_insert_stmt = "INSERT INTO Admission (PatientID, DoctorID, HospitalID, MedicationID, AdmissionDate, DischargeDate VALUES (%s, %s, %s, %s, %s, %s) RETURNING AdmissionID;"
+    admission_insert_stmt = "INSERT INTO Admission (PatientID, DoctorID, HospitalID, MedicationID, AdmissionDate, DischargeDate) VALUES (%s, %s, %s, %s, %s, %s) RETURNING AdmissionID;"
     cursor.execute(admission_insert_stmt, (patient_id, doctor_id, hospital_id, medication_id, admission_date, discharge_date))
     admission_id = cursor.fetchone()[0]
 
     # Insert data into AdmissionType table
-    admission_type_insert_stmt = "INSERT INTO AdmissionType (AdmissionID, AdmissionType) VALUES (%s, %s)"
+    admission_type_insert_stmt = "INSERT INTO AdmissionType (AdmissionID, AdmissionType) VALUES (%s, %s);"
     cursor.execute(admission_type_insert_stmt, (admission_id, admission_type))
 
+    # Insert data into Billing table
+    billing_insert_stmt = "INSERT INTO Billing (AdmissionID, BillingAmount) VALUES (%s, %s);"
+    cursor.execute(billing_insert_stmt, (admission_id, billing_amount))
 
+    # Insert data into TestResults table
+    test_result_insert_stmt = "INSERT INTO TestResult (AdmissionID, TestID, TestResults) VALUES (%s, %s, %s);"
+    cursor.execute(test_result_insert_stmt, (admission_id, test_id, test_results))
 
+    # Insert data into DiagAdm (DiagnosisAdmission) table
+    diag_adm_insert_stmt = "INSERT INTO DiagAdm (AdmissionID, DiagnosisID) VALUES (%s, %s);"
+    cursor.execute(diag_adm_insert_stmt, (admission_id, diagnosis_id))
 
-
-
-
-
-
-
-
-
-
-
+    connection.commit()
+    print("Data added successfully!")
 
 
 def handle_choice(choice, connection):
     """Executes the selected functionality based on user choice."""
 
-    if choice == '1':
+    if choice == 1:
         print("Insert Data functionality:\n")
         insert_data(connection)
-    elif choice == '2':
+    elif choice == 2:
         print("Delete Data functionality")
-    elif choice == '3':
+    elif choice == 3:
         print("Update Data functionality")
-    elif choice == '4':
+    elif choice == 4:
         print("Search Data functionality")
-    elif choice == '5':
+    elif choice == 5:
         print("Aggregate Functions functionality")
-    elif choice == '6':
+    elif choice == 6:
         print("Sorting functionality")
-    elif choice == '7':
+    elif choice == 7:
         print("Joins functionality")
-    elif choice == '8':
+    elif choice == 8:
         print("Grouping functionality")
-    elif choice == '9':
+    elif choice == 9:
         print("Subqueries functionality")
-    elif choice == '10':
+    elif choice == 10:
         print("Transactions functionality")
-    elif choice == '11':
+    elif choice == 11:
         print("Error Handling functionality")
-    elif choice == '12':
+    elif choice == 12:
         print("Exiting the system...")
     else:
         print("Invalid choice. Please try again.")
@@ -185,16 +185,8 @@ if __name__ == "__main__":
         while True:
             choice = main_menu()
             handle_choice(choice, connection)
-            if choice == '12':
+            if choice == 12:
                 break
         close_connection(connection)
     else:
         print("Connection failed. Terminating program.")
-
-
-cursor = connection.cursor()
-
-query = "SELECT * FROM Patient"
-
-results = cursor.execute(query).fetchall()
-print(results)

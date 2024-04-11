@@ -27,8 +27,8 @@ def main_menu():
     """Displays the main menu with options for the user."""
 
     print("\nWelcome to the Hospital Management System!")
-    print("1. Insert Data")
-    print("2. Delete Data")
+    print("1. Insert a new patient")
+    print("2. Delete the expired insurance on file for a patient")
     print("3. Update Data")
     print("4. Search Data")
     print("5. Aggregate Functions")
@@ -52,7 +52,7 @@ def main_menu():
             print("Invalid input. Please enter a number.")
 
 
-def insert_data(connection):
+def insert_new_patient(connection):
     """Prompts user for data and inserts it into all 14 entities."""
 
     cursor = connection.cursor()
@@ -144,17 +144,40 @@ def insert_data(connection):
     cursor.execute(diag_adm_insert_stmt, (admission_id, diagnosis_id))
 
     connection.commit()
-    print("Data added successfully!")
+    print("New patient added successfully!")
+
+
+def delete_patient_insurance(connection):
+    """Deletes the insurance provider for a specific patient."""
+
+    cursor = connection.cursor()
+
+    patient_id = int(input("Enter the Patient ID: "))
+    delete_stmt = f"DELETE FROM InsuranceProvider WHERE PatientID = {patient_id}"
+
+    try:
+        cursor.execute(delete_stmt)
+        connection.commit()
+        if (cursor.rowcount == 1):
+            print(f"Insurance provider for Patient ID {patient_id} deleted successfully!")
+        else:
+            print(f"No insurance provider found for Patient ID {patient_id}.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    cursor.close()
 
 
 def handle_choice(choice, connection):
     """Executes the selected functionality based on user choice."""
 
     if choice == 1:
-        print("Insert Data functionality:\n")
-        insert_data(connection)
+        print("Insert new patient:\n")
+        insert_new_patient(connection)
     elif choice == 2:
         print("Delete Data functionality")
+        delete_patient_insurance(connection)
     elif choice == 3:
         print("Update Data functionality")
     elif choice == 4:

@@ -169,17 +169,37 @@ def delete_patient_insurance(connection):
     cursor.close()
 
 
+def update_patient_discharge_date(connection):
+    """Allows user to update the discharge date for a patient."""
+
+    cursor = connection.cursor()
+    admission_id = int(input("Enter the Admission ID: "))
+    new_discharge_date = input("Enter the new Discharge Date (MM/DD/YYYY): ")
+    update_stmt = f"UPDATE Admission SET DischargeDate = '{new_discharge_date}' WHERE AdmissionID = {admission_id}"
+
+    try:
+        cursor.execute(update_stmt)
+        connection.commit()
+        if cursor.rowcount > 0:
+            print(f"Discharge date for Admission ID {admission_id} updated successfully!")
+        else:
+            print(f"No patient found with Admission ID {admission_id}.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        
+    cursor.close()
+
+
 def handle_choice(choice, connection):
     """Executes the selected functionality based on user choice."""
 
     if choice == 1:
-        print("Insert new patient:\n")
         insert_new_patient(connection)
     elif choice == 2:
-        print("Delete Data functionality")
         delete_patient_insurance(connection)
     elif choice == 3:
-        print("Update Data functionality")
+        update_patient_discharge_date(connection)
     elif choice == 4:
         print("Search Data functionality")
     elif choice == 5:

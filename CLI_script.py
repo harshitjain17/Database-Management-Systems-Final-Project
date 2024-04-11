@@ -1,4 +1,5 @@
 import psycopg2 as db_connect
+import pandas as pd
 
 host_name="localhost"
 db_user="postgres"
@@ -29,8 +30,8 @@ def main_menu():
     print("\nWelcome to the Hospital Management System!")
     print("1. Insert a new patient")
     print("2. Delete the expired insurance on file for a patient")
-    print("3. Update Data")
-    print("4. Search Data")
+    print("3. Update patient's discharge date")
+    print("4. Search for patients by the doctor assigned to them")
     print("5. Aggregate Functions")
     print("6. Sorting")
     print("7. Joins")
@@ -53,7 +54,7 @@ def main_menu():
 
 
 def insert_new_patient(connection):
-    """Prompts user for data and inserts it into all 14 entities."""
+    """Prompts user for data and inserts it into all 14 relations."""
 
     cursor = connection.cursor()
 
@@ -151,7 +152,6 @@ def delete_patient_insurance(connection):
     """Deletes the insurance provider for a specific patient."""
 
     cursor = connection.cursor()
-
     patient_id = int(input("Enter the Patient ID: "))
     delete_stmt = f"DELETE FROM InsuranceProvider WHERE PatientID = {patient_id}"
 
@@ -162,7 +162,6 @@ def delete_patient_insurance(connection):
             print(f"Insurance provider for Patient ID {patient_id} deleted successfully!")
         else:
             print(f"No insurance provider found for Patient ID {patient_id}.")
-
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -191,6 +190,30 @@ def update_patient_discharge_date(connection):
     cursor.close()
 
 
+def search_patients_by_doctor(connection):
+  """Allows user to search for patients by doctor."""
+
+  cursor = connection.cursor()
+  doctor_name = input("Enter the doctor's full name: ")
+  search_stmt = f" SELECT Admission.PatientID, Name, AdmissionID, Admission.DoctorID, DoctorName, AdmissionDate, DischargeDate FROM Admission JOIN Patient ON Admission.PatientID = Patient.PatientID JOIN Doctor ON Admission.DoctorID = Doctor.DoctorID WHERE Doctor.DoctorName LIKE '%{doctor_name}%'"
+
+  try:
+    cursor.execute(search_stmt)
+    results = cursor.fetchall()
+    if results:
+      print("\nSearch results for patients:")
+      df = pd.DataFrame(results, columns=[desc[0] for desc in cursor.description])
+      print(df.to_string(index=False))
+    else:
+      print(f"No patients found assigned to Dr. {doctor_name}.")
+
+  except Exception as e:
+    print(f"An error occurred: {e}")
+
+  # Close the cursor
+  cursor.close()
+
+
 def handle_choice(choice, connection):
     """Executes the selected functionality based on user choice."""
 
@@ -201,7 +224,7 @@ def handle_choice(choice, connection):
     elif choice == 3:
         update_patient_discharge_date(connection)
     elif choice == 4:
-        print("Search Data functionality")
+        search_patients_by_doctor(connection)
     elif choice == 5:
         print("Aggregate Functions functionality")
     elif choice == 6:

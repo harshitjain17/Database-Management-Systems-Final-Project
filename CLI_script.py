@@ -191,27 +191,26 @@ def update_patient_discharge_date(connection):
 
 
 def search_patients_by_doctor(connection):
-  """Allows user to search for patients by doctor."""
+    """Allows user to search for patients by doctor."""
 
-  cursor = connection.cursor()
-  doctor_name = input("Enter the doctor's full name: ")
-  search_stmt = f" SELECT Admission.PatientID, Name, AdmissionID, Admission.DoctorID, DoctorName, AdmissionDate, DischargeDate FROM Admission JOIN Patient ON Admission.PatientID = Patient.PatientID JOIN Doctor ON Admission.DoctorID = Doctor.DoctorID WHERE Doctor.DoctorName LIKE '%{doctor_name}%'"
+    cursor = connection.cursor()
+    doctor_name = input("Enter the doctor's full name: ")
+    search_stmt = f" SELECT Admission.PatientID, Name, AdmissionID, Admission.DoctorID, DoctorName, AdmissionDate, DischargeDate FROM Admission JOIN Patient ON Admission.PatientID = Patient.PatientID JOIN Doctor ON Admission.DoctorID = Doctor.DoctorID WHERE Doctor.DoctorName LIKE '%{doctor_name}%'"
 
-  try:
-    cursor.execute(search_stmt)
-    results = cursor.fetchall()
-    if results:
-      print("\nSearch results for patients:")
-      df = pd.DataFrame(results, columns=[desc[0] for desc in cursor.description])
-      print(df.to_string(index=False))
-    else:
-      print(f"No patients found assigned to Dr. {doctor_name}.")
+    try:
+        cursor.execute(search_stmt)
+        results = cursor.fetchall()
+        if results:
+            print("\nSearch results for patients:")
+            df = pd.DataFrame(results, columns=[desc[0] for desc in cursor.description])
+            print(df.to_string(index=False))
+        else:
+            print(f"No patients found assigned to Dr. {doctor_name}.")
 
-  except Exception as e:
-    print(f"An error occurred: {e}")
-
-  # Close the cursor
-  cursor.close()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        
+    cursor.close()
 
 
 def handle_choice(choice, connection):

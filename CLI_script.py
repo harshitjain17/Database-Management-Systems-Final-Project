@@ -32,7 +32,7 @@ def main_menu():
     print("2. Delete the expired insurance on file for a patient")
     print("3. Update patient's discharge date")
     print("4. Search for patients by the doctor assigned to them")
-    print("5. Aggregate Functions")
+    print("5. Aggregate Functions on Patient table")
     print("6. Sorting")
     print("7. Joins")
     print("8. Grouping")
@@ -213,6 +213,32 @@ def search_patients_by_doctor(connection):
     cursor.close()
 
 
+def patient_aggregates(connection):
+    """Provides options for aggregate functions on Patients table."""
+
+    cursor = connection.cursor()
+
+    print("1. Count Total Patients")
+    print("2. Find Average Age of Patients")
+    choice = input("Enter your choice (1-2): ")
+    
+    if choice == '1':
+        cursor.execute("SELECT COUNT(*) FROM Patient;")
+        count = cursor.fetchone()[0]
+        print("Total Patients:", count)
+    
+    elif choice == '2':
+        cursor.execute("SELECT AVG(Age) FROM Patient;")
+        avg_age = cursor.fetchone()[0]
+        
+        print("Average Patient Age:", avg_age)        
+    
+    else:
+        print("Invalid choice. Please try again.")
+
+    cursor.close()
+
+
 def handle_choice(choice, connection):
     """Executes the selected functionality based on user choice."""
 
@@ -225,7 +251,7 @@ def handle_choice(choice, connection):
     elif choice == 4:
         search_patients_by_doctor(connection)
     elif choice == 5:
-        print("Aggregate Functions functionality")
+        patient_aggregates(connection)
     elif choice == 6:
         print("Sorting functionality")
     elif choice == 7:

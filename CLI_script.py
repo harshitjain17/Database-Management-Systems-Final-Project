@@ -36,7 +36,7 @@ def main_menu():
     print("6. Sorts patients by age in descending order")
     print("7. Joins Patients and Admission tables for emergency admissions with O- blood type")
     print("8. Groups patients based on user-specified columns")
-    print("9. Subqueries")
+    print("9. Finds patients who have been admitted more than once using a subquery")
     print("10. Transactions")
     print("11. Error Handling")
     print("12. Exit")
@@ -312,6 +312,32 @@ def group_patients(connection):
         print("No data found in Patients table.")
 
 
+def find_readmitted_patients(connection):
+    """Finds patients who have been admitted more than once using a subquery."""
+
+    cursor = connection.cursor()
+
+    try:
+        subquery = "SELECT PatientID FROM Admission GROUP BY PatientID HAVING COUNT(*) > 1"
+        query = f"SELECT * FROM Patient WHERE PatientID IN ({subquery})"
+
+        cursor.execute(query)
+        data = cursor.fetchall()
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        data = []
+
+    finally:
+        cursor.close()
+
+    if data:
+        print("\nPatients who have been readmitted:")
+        df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])
+        print(df.to_string(index=False))
+    else:
+        print("No patients found who have been readmitted.")
+
 
 def handle_choice(choice, connection):
     """Executes the selected functionality based on user choice."""
@@ -333,11 +359,11 @@ def handle_choice(choice, connection):
     elif choice == 8:
         group_patients(connection)
     elif choice == 9:
-        print("Subqueries functionality")
+        find_readmitted_patients(connection)
     elif choice == 10:
         print("Transactions functionality")
     elif choice == 11:
-        print("Error Handling functionality")
+        print("Error handling performed for all functions.")
     elif choice == 12:
         print("Exiting the system...")
     else:
@@ -350,8 +376,6 @@ if __name__ == "__main__":
         while True:
             choice = main_menu()
             handle_choice(choice, connection)
-            if (choice == 11):
-                print("Error handling performed for all functions.")
             if (choice == 12):
                 break
         close_connection(connection)

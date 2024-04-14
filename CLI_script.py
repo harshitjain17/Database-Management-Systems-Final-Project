@@ -217,7 +217,6 @@ def patient_aggregates(connection):
     """Provides options for aggregate functions on Patients table."""
 
     cursor = connection.cursor()
-
     print("1. Count Total Patients")
     print("2. Find Average Age of Patients")
     choice = input("Enter your choice (1-2): ")
@@ -239,6 +238,19 @@ def patient_aggregates(connection):
     cursor.close()
 
 
+def sort_patients(connection):
+    """Sorts patients by age in descending order."""
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM Patient ORDER BY Age DESC;")
+    patients = cursor.fetchall()
+    cursor.close()
+
+    print("\nPatients Sorted by Age (Descending):")
+    for patient in patients:
+        print(f"Patient ID: {patient[0]}, Name: {patient[1]}, Age: {patient[2]}")
+
+
 def handle_choice(choice, connection):
     """Executes the selected functionality based on user choice."""
 
@@ -253,7 +265,7 @@ def handle_choice(choice, connection):
     elif choice == 5:
         patient_aggregates(connection)
     elif choice == 6:
-        print("Sorting functionality")
+        sort_patients(connection)
     elif choice == 7:
         print("Joins functionality")
     elif choice == 8:

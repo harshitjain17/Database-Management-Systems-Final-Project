@@ -33,8 +33,8 @@ def main_menu():
     print("3. Update patient's discharge date")
     print("4. Search for patients by the doctor assigned to them")
     print("5. Aggregate Functions on Patient table")
-    print("6. Sorting")
-    print("7. Joins")
+    print("6. Sorts patients by age in descending order")
+    print("7. Joins Patients and Admission tables for emergency admissions with O- blood type")
     print("8. Grouping")
     print("9. Subqueries")
     print("10. Transactions")
@@ -251,6 +251,29 @@ def sort_patients(connection):
         print(f"Patient ID: {patient[0]}, Name: {patient[1]}, Age: {patient[2]}")
 
 
+def join_patients_emergency_o_neg(connection):
+    """Joins Patients and Admission tables for emergency admissions with O- blood type."""
+
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT P.Name, A.AdmissionDate
+    FROM Patient P
+    INNER JOIN Admission A ON P.PatientID = A.PatientID
+    INNER JOIN AdmissionType AT ON A.AdmissionID = AT.AdmissionID
+    INNER JOIN BloodGroup BG ON P.BloodTypeID = BG.BloodTypeID
+    WHERE AT.AdmissionType = 'Emergency' AND BG.BloodType = 'O-';
+    """)
+    admissions = cursor.fetchall()
+    cursor.close()
+
+    if admissions:
+        print("\nEmergency Admissions with Patients having Blood Type O-:")
+        for admission in admissions:
+            print(f"Patient Name: {admission[0]}, Admission Date: {admission[1]}")
+    else:
+        print("No emergency admissions found for patients with Blood Type O-")
+
+
 def handle_choice(choice, connection):
     """Executes the selected functionality based on user choice."""
 
@@ -267,7 +290,7 @@ def handle_choice(choice, connection):
     elif choice == 6:
         sort_patients(connection)
     elif choice == 7:
-        print("Joins functionality")
+        join_patients_emergency_o_neg(connection)
     elif choice == 8:
         print("Grouping functionality")
     elif choice == 9:

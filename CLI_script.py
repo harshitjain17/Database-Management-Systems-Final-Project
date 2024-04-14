@@ -278,17 +278,25 @@ def group_patients(connection):
     """Groups patients based on user-specified columns."""
 
     cursor = connection.cursor()
-    column1 = input("Enter the first column to group by: ")
-    column2 = input("Enter the second column to group by (optional): ")
 
-    query = f"SELECT {column1}"
-    if column2:
-        query += f", {column2}"
-    query += " FROM Patient GROUP BY " + query.split("SELECT ")[-1]
+    try:
+        column1 = input("Enter the first column to group by: ")
+        column2 = input("Enter the second column to group by (optional): ")
 
-    cursor.execute(query)
-    data = cursor.fetchall()
-    cursor.close()
+        query = f"SELECT {column1}"
+        if column2:
+            query += f", {column2}"
+        query += " FROM Patient GROUP BY " + query.split("SELECT ")[-1]
+
+        cursor.execute(query)
+        data = cursor.fetchall()
+
+    except Exception as e:
+        print(f"An error occurred while fetching data: {e}")
+        data = []
+
+    finally:
+        cursor.close()
 
     if data:
         df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])

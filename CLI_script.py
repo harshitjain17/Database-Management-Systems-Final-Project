@@ -1,5 +1,6 @@
 import psycopg2 as db_connect
 import pandas as pd
+import datetime
 
 host_name="localhost"
 db_user="postgres"
@@ -37,7 +38,7 @@ def main_menu():
     print("7. Joins Patients and Admission tables for emergency admissions with O- blood type")
     print("8. Groups patients based on user-specified columns")
     print("9. Finds patients who have been admitted more than once using a subquery")
-    print("10. Transactions")
+    print("10. Discharges a patient using a transaction")
     print("11. Error Handling")
     print("12. Exit")
     
@@ -282,12 +283,10 @@ def group_patients(connection):
     try:
         column1 = input("Enter the first column to group by: ")
         column2 = input("Enter the second column to group by (optional): ")
-
         query = f"SELECT {column1}"
         if column2:
             query += f", {column2}"
         query += " FROM Patient GROUP BY " + query.split("SELECT ")[-1]
-
         cursor.execute(query)
         data = cursor.fetchall()
 
@@ -319,8 +318,7 @@ def find_readmitted_patients(connection):
 
     try:
         subquery = "SELECT PatientID FROM Admission GROUP BY PatientID HAVING COUNT(*) > 1"
-        query = f"SELECT * FROM Patient WHERE PatientID IN ({subquery})"
-
+        query = f"SELECT * FROM Patient WHERE PatientID IN ({subquery});"
         cursor.execute(query)
         data = cursor.fetchall()
 
@@ -337,6 +335,42 @@ def find_readmitted_patients(connection):
         print(df.to_string(index=False))
     else:
         print("No patients found who have been readmitted.")
+
+
+def discharge_patient_transaction(connection):
+    """Discharges a patient using a transaction."""
+
+    cursor = connection.cursor()
+
+    try:
+        patient_id = int(input("Enter Patient ID: "))
+
+        # Begin transaction
+        cursor.execute("BEGIN TRANSACTION;")
+
+        # 1. Find existing patient and admission (check if active admission exists)
+        check_active_admission_stmt = "SELECT * FROM Admission WHERE PatientID = %s AND DischargeDate IS NULL;"
+        cursor.execute(check_active_admission_stmt, (patient_id,))
+        active_admission = cursor.fetchone()
+        if not active_admission:
+            raise Exception("Patient not found or has no active admission.")
+
+        # 2. Update discharge date in Admission table
+        discharge_date = datetime.datetime.now().strftime('%m/%d/%Y')
+        update_admission_stmt = "UPDATE Admission SET DischargeDate = %s WHERE AdmissionID = %s;"
+        cursor.execute(update_admission_stmt, (discharge_date, active_admission[0]))
+
+        # All updates successful, commit the transaction
+        connection.commit()
+        print(f"Patient ID {patient_id} discharged successfully!")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        connection.rollback()
+        print("Transaction rolled back. Patient not discharged.")
+
+    finally:
+        cursor.close()
 
 
 def handle_choice(choice, connection):
@@ -361,7 +395,7 @@ def handle_choice(choice, connection):
     elif choice == 9:
         find_readmitted_patients(connection)
     elif choice == 10:
-        print("Transactions functionality")
+        discharge_patient_transaction(connection)
     elif choice == 11:
         print("Error handling performed for all functions.")
     elif choice == 12:

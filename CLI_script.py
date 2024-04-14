@@ -342,7 +342,9 @@ if __name__ == "__main__":
         while True:
             choice = main_menu()
             handle_choice(choice, connection)
-            if choice == 12:
+            if (choice == 11):
+                print("Error handling performed for all functions.")
+            if (choice == 12):
                 break
         close_connection(connection)
     else:

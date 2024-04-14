@@ -35,7 +35,7 @@ def main_menu():
     print("5. Aggregate Functions on Patient table")
     print("6. Sorts patients by age in descending order")
     print("7. Joins Patients and Admission tables for emergency admissions with O- blood type")
-    print("8. Grouping")
+    print("8. Groups patients based on user-specified columns")
     print("9. Subqueries")
     print("10. Transactions")
     print("11. Error Handling")
@@ -274,6 +274,37 @@ def join_patients_emergency_o_neg(connection):
         print("No emergency admissions found for patients with Blood Type O-")
 
 
+def group_patients(connection):
+    """Groups patients based on user-specified columns."""
+
+    cursor = connection.cursor()
+    column1 = input("Enter the first column to group by: ")
+    column2 = input("Enter the second column to group by (optional): ")
+
+    query = f"SELECT {column1}"
+    if column2:
+        query += f", {column2}"
+    query += " FROM Patient GROUP BY " + query.split("SELECT ")[-1]
+
+    cursor.execute(query)
+    data = cursor.fetchall()
+    cursor.close()
+
+    if data:
+        df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])
+        print("\nGrouping results:")
+        
+        if column2:
+            grouped_data = df.groupby([column1, column2]).size().unstack()
+            print(grouped_data)
+        else:
+            grouped_data = df.groupby(column1).size()
+            print(grouped_data)
+    else:
+        print("No data found in Patients table.")
+
+
+
 def handle_choice(choice, connection):
     """Executes the selected functionality based on user choice."""
 
@@ -292,7 +323,7 @@ def handle_choice(choice, connection):
     elif choice == 7:
         join_patients_emergency_o_neg(connection)
     elif choice == 8:
-        print("Grouping functionality")
+        group_patients(connection)
     elif choice == 9:
         print("Subqueries functionality")
     elif choice == 10:

@@ -90,15 +90,8 @@ def insert_new_patient(connection):
     patient_id = cursor.fetchone()[0]
 
     # Insert data into InsuranceProvider (if provided)
-    insurance_number = input("Enter Insurance Number: ") or None
-    insurance_insert_stmt = "INSERT INTO InsuranceProvider (PatientID, InsuranceNumber, InsuranceProviderName) VALUES (%s, %s, %s);"
-    cursor.execute(insurance_insert_stmt, (patient_id, insurance_number, insurance_provider))
-
-    # Insert data into Test table
-    test_name = input("Enter Test Name: ") or None
-    test_insert_stmt = "INSERT INTO Test (TestName) VALUES (%s) RETURNING TestID;"
-    cursor.execute(test_insert_stmt, (test_name,))
-    test_id = cursor.fetchone()[0]
+    insurance_insert_stmt = "INSERT INTO InsuranceProvider (PatientID, InsuranceProviderName) VALUES (%s, %s);"
+    cursor.execute(insurance_insert_stmt, (patient_id, insurance_provider))
 
     # Insert data into Hospital table
     hospital_insert_stmt = "INSERT INTO Hospital (HospitalName) VALUES (%s) RETURNING HospitalID;"
@@ -138,8 +131,8 @@ def insert_new_patient(connection):
     cursor.execute(billing_insert_stmt, (admission_id, billing_amount))
 
     # Insert data into TestResults table
-    test_result_insert_stmt = "INSERT INTO TestResult (AdmissionID, TestID, TestResults) VALUES (%s, %s, %s);"
-    cursor.execute(test_result_insert_stmt, (admission_id, test_id, test_results))
+    test_result_insert_stmt = "INSERT INTO TestResult (AdmissionID, TestResults) VALUES (%s, %s);"
+    cursor.execute(test_result_insert_stmt, (admission_id, test_results))
 
     # Insert data into DiagAdm (DiagnosisAdmission) table
     diag_adm_insert_stmt = "INSERT INTO DiagAdm (AdmissionID, DiagnosisID) VALUES (%s, %s);"
@@ -147,6 +140,7 @@ def insert_new_patient(connection):
 
     connection.commit()
     print("New patient added successfully!")
+    cursor.close()
 
 
 def delete_patient_insurance(connection):
@@ -230,7 +224,6 @@ def patient_aggregates(connection):
     elif choice == '2':
         cursor.execute("SELECT AVG(Age) FROM Patient;")
         avg_age = cursor.fetchone()[0]
-        
         print("Average Patient Age:", avg_age)        
     
     else:
@@ -300,7 +293,6 @@ def group_patients(connection):
     if data:
         df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])
         print("\nGrouping results:")
-        
         if column2:
             grouped_data = df.groupby([column1, column2]).size().unstack()
             print(grouped_data)

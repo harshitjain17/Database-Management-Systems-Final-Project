@@ -374,16 +374,16 @@ def discharge_patient_transaction(connection):
         cursor.execute("BEGIN TRANSACTION;")
 
         # 1. Find existing patient and admission (check if active admission exists)
-        check_active_admission_stmt = "SELECT * FROM Admission WHERE PatientID = %s AND DischargeDate IS NULL;"
-        cursor.execute(check_active_admission_stmt, (patient_id,))
+        check_active_admission_stmt = f"SELECT * FROM Admission WHERE PatientID = {patient_id} AND DischargeDate IS NULL;"
+        cursor.execute(check_active_admission_stmt)
         active_admission = cursor.fetchone()
         if not active_admission:
             raise Exception("Patient not found or has no active admission.")
 
         # 2. Update discharge date in Admission table
         discharge_date = datetime.datetime.now().strftime('%m/%d/%Y')
-        update_admission_stmt = "UPDATE Admission SET DischargeDate = %s WHERE AdmissionID = %s;"
-        cursor.execute(update_admission_stmt, (discharge_date, active_admission[0]))
+        update_admission_stmt = f"UPDATE Admission SET DischargeDate = {discharge_date} WHERE AdmissionID = {active_admission[0]};"
+        cursor.execute(update_admission_stmt)
 
         # All updates successful, commit the transaction
         connection.commit()

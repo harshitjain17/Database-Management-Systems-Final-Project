@@ -100,9 +100,15 @@ def insert_new_patient(connection):
     cursor.execute(insurance_insert_stmt, (patient_id, insurance_provider))
 
     # Insert data into Hospital table
-    hospital_insert_stmt = "INSERT INTO Hospital (HospitalName) VALUES (%s) RETURNING HospitalID;"
-    cursor.execute(hospital_insert_stmt, (hospital,))
-    hospital_id = cursor.fetchone()[0]
+    hospital_check_stmt = "SELECT HospitalID FROM Hospital WHERE HospitalName = %s;"
+    cursor.execute(hospital_check_stmt, (hospital,))
+    existing_hospital_id = cursor.fetchone()
+    if existing_hospital_id:
+        hospital_id = existing_hospital_id[0]
+    else:
+        hospital_insert_stmt = "INSERT INTO Hospital (HospitalName) VALUES (%s) RETURNING HospitalID;"
+        cursor.execute(hospital_insert_stmt, (hospital,))
+        hospital_id = cursor.fetchone()[0]
 
     # Insert data into Room table
     room_insert_stmt = "INSERT INTO Room (HospitalID, RoomNumber) VALUES (%s, %s);"

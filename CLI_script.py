@@ -172,7 +172,8 @@ def delete_patient_insurance(connection):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-    cursor.close()
+    finally:
+        cursor.close()
 
 
 def update_billing_amount(connection):
@@ -194,8 +195,8 @@ def update_billing_amount(connection):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-    cursor.close()
-
+    finally:
+        cursor.close()
 
 
 def search_patients_by_doctor(connection):
@@ -229,56 +230,75 @@ def patient_aggregates(connection):
     print("2. Find Average Age of Patients")
     choice = input("Enter your choice (1-2): ")
     
-    if choice == '1':
-        cursor.execute("SELECT COUNT(*) FROM Patient;")
-        count = cursor.fetchone()[0]
-        print("Total Patients:", count)
-    
-    elif choice == '2':
-        cursor.execute("SELECT AVG(Age) FROM Patient;")
-        avg_age = cursor.fetchone()[0]
-        print("Average Patient Age:", avg_age)        
-    
-    else:
-        print("Invalid choice. Please try again.")
+    try:
+        if choice == '1':
+            cursor.execute("SELECT COUNT(*) FROM Patient;")
+            count = cursor.fetchone()[0]
+            print("Total Patients:", count)
+        
+        elif choice == '2':
+            cursor.execute("SELECT AVG(Age) FROM Patient;")
+            avg_age = cursor.fetchone()[0]
+            print("Average Patient Age:", avg_age)        
+        
+        else:
+            print("Invalid choice. Please try again.")
 
-    cursor.close()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    finally:
+        cursor.close()
 
 
 def sort_patients(connection):
     """Sorts patients by age in descending order."""
 
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM Patient ORDER BY Age DESC;")
-    patients = cursor.fetchall()
-    cursor.close()
 
-    print("\nPatients Sorted by Age (Descending):")
-    for patient in patients:
-        print(f"Patient ID: {patient[0]}, Name: {patient[1]}, Age: {patient[2]}")
+    try:
+        cursor.execute("SELECT * FROM Patient ORDER BY Age DESC;")
+        patients = cursor.fetchall()
+        print("\nPatients Sorted by Age (Descending):")
+        for patient in patients:
+            print(f"Patient ID: {patient[0]}, Name: {patient[1]}, Age: {patient[2]}")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    finally:
+        cursor.close()
 
 
 def join_patients_emergency_o_neg(connection):
     """Joins Patients and Admission tables for emergency admissions with O- blood type."""
 
     cursor = connection.cursor()
-    cursor.execute("""
-    SELECT P.Name, A.AdmissionDate
-    FROM Patient P
-    INNER JOIN Admission A ON P.PatientID = A.PatientID
-    INNER JOIN AdmissionType AT ON A.AdmissionID = AT.AdmissionID
-    INNER JOIN BloodGroup BG ON P.BloodTypeID = BG.BloodTypeID
-    WHERE AT.AdmissionType = 'Emergency' AND BG.BloodType = 'O-';
-    """)
-    admissions = cursor.fetchall()
-    cursor.close()
 
-    if admissions:
-        print("\nEmergency Admissions with Patients having Blood Type O-:")
-        for admission in admissions:
-            print(f"Patient Name: {admission[0]}, Admission Date: {admission[1]}")
-    else:
-        print("No emergency admissions found for patients with Blood Type O-")
+    try:
+        cursor.execute("""
+        SELECT P.Name, A.AdmissionDate
+        FROM Patient P
+        INNER JOIN Admission A ON P.PatientID = A.PatientID
+        INNER JOIN AdmissionType AT ON A.AdmissionID = AT.AdmissionID
+        INNER JOIN BloodGroup BG ON P.BloodTypeID = BG.BloodTypeID
+        WHERE AT.AdmissionType = 'Emergency' AND BG.BloodType = 'O-';
+        """)
+        admissions = cursor.fetchall()
+        cursor.close()
+
+        if admissions:
+            print("\nEmergency Admissions with Patients having Blood Type O-:")
+            for admission in admissions:
+                print(f"Patient Name: {admission[0]}, Admission Date: {admission[1]}")
+        else:
+            print("No emergency admissions found for patients with Blood Type O-")
+
+    except Exception as e:
+        print("Error fetching emergency admissions data:", e)
+
+    finally:
+        cursor.close()
 
 
 def group_patients(connection):
@@ -296,24 +316,24 @@ def group_patients(connection):
         cursor.execute(query)
         data = cursor.fetchall()
 
+        if data:
+            df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])
+            print("\nGrouping results:")
+            if column2:
+                grouped_data = df.groupby([column1, column2]).size().unstack()
+                print(grouped_data)
+            else:
+                grouped_data = df.groupby(column1).size()
+                print(grouped_data)
+        else:
+            print("No data found in Patients table.")
+    
     except Exception as e:
         print(f"An error occurred while fetching data: {e}")
         data = []
 
     finally:
         cursor.close()
-
-    if data:
-        df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])
-        print("\nGrouping results:")
-        if column2:
-            grouped_data = df.groupby([column1, column2]).size().unstack()
-            print(grouped_data)
-        else:
-            grouped_data = df.groupby(column1).size()
-            print(grouped_data)
-    else:
-        print("No data found in Patients table.")
 
 
 def find_readmitted_patients(connection):
@@ -327,19 +347,19 @@ def find_readmitted_patients(connection):
         cursor.execute(query)
         data = cursor.fetchall()
 
+        if data:
+            print("\nPatients who have been readmitted:")
+            df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])
+            print(df.to_string(index=False))
+        else:
+            print("No patients found who have been readmitted.")
+
     except Exception as e:
         print(f"An error occurred: {e}")
         data = []
 
     finally:
         cursor.close()
-
-    if data:
-        print("\nPatients who have been readmitted:")
-        df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])
-        print(df.to_string(index=False))
-    else:
-        print("No patients found who have been readmitted.")
 
 
 def discharge_patient_transaction(connection):

@@ -80,9 +80,15 @@ def insert_new_patient(connection):
         billing_amount = None
 
     # Insert data into BloodGroup table
-    bloodgroup_insert_stmt = "INSERT INTO BloodGroup (BloodType) VALUES (%s) RETURNING BloodTypeID;"
-    cursor.execute(bloodgroup_insert_stmt, (blood_type,))
-    bloodtype_id = cursor.fetchone()[0]
+    blood_type_check_stmt = "SELECT BloodTypeID FROM BloodGroup WHERE BloodType = %s;"
+    cursor.execute(blood_type_check_stmt, (blood_type,))
+    existing_bloodtype_id = cursor.fetchone()
+    if existing_bloodtype_id:
+        bloodtype_id = existing_bloodtype_id[0]
+    else:
+        bloodgroup_insert_stmt = "INSERT INTO BloodGroup (BloodType) VALUES (%s) RETURNING BloodTypeID;"
+        cursor.execute(bloodgroup_insert_stmt, (blood_type,))
+        bloodtype_id = cursor.fetchone()[0]
 
     # Insert data into Patient table
     patient_insert_stmt = "INSERT INTO Patient (Name, Age, Gender, BloodTypeID) VALUES (%s, %s, %s, %s) RETURNING PatientID;"

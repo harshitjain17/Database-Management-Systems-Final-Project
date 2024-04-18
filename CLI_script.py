@@ -1,6 +1,7 @@
 import psycopg2 as db_connect
 import pandas as pd
 import datetime
+import csv
 
 host_name="localhost"
 db_user="postgres"
@@ -39,26 +40,53 @@ def main_menu():
     print("8. Groups patients based on user-specified columns")
     print("9. Finds patients who have been admitted more than once using a subquery")
     print("10. Discharges a patient using a transaction")
-    print("11. Error Handling")
-    print("12. Exit")
+    print("11. Bonus: Custom Query")
+    print("12. Error Handling")
+    print("13. Exit")
     
     while True:
-        choice = input("Enter your choice (1-12): ")
+        choice = input("Enter your choice (1-13): ")
         try:
             choice_int = int(choice)
-            if (1 <= choice_int <= 12):
+            if (1 <= choice_int <= 13):
                 return choice_int
             else:
                 print("Invalid choice. Please enter a number between 1 and 12.")
         except ValueError:
             print("Invalid input. Please enter a number.")
 
+# def insert_patients_from_csv(connection):
+#     """Inserts patient data from a CSV file into the database using insert_new_patient."""
+    
+#     with open('Healthcare-Dataset.csv', 'r') as csvfile:
+#         reader = csv.reader(csvfile)
+#         next(reader)
+
+#         for csv_row in reader:
+#             insert_new_patient(connection, csv_row)
 
 def insert_new_patient(connection):
     """Prompts user for data and inserts it into all 14 relations."""
 
     cursor = connection.cursor()
 
+    # # User input using CSV file
+    # name = csv_row[0] if csv_row[0] else None
+    # age = int(csv_row[1]) if csv_row[1] else None
+    # gender = csv_row[2] if csv_row[2] else None
+    # blood_type = csv_row[3] if csv_row[3] else None
+    # medical_condition = csv_row[4] if csv_row[4] else None
+    # admission_date = csv_row[5] if csv_row[5] else None
+    # doctor = csv_row[6] if csv_row[6] else None
+    # hospital = csv_row[7] if csv_row[7] else None
+    # insurance_provider = csv_row[8] if csv_row[8] else None
+    # billing_amount = float(csv_row[9]) if csv_row[9] else None
+    # room_number = int(csv_row[10]) if csv_row[10] else None
+    # admission_type = csv_row[11] if csv_row[11] else None
+    # discharge_date = csv_row[12] if csv_row[12] else None
+    # medication = csv_row[13] if csv_row[13] else None
+    # test_results = csv_row[14] if csv_row[14] else None
+    
     # Get user input for each attribute with handling for optional fields
     name = input("Enter Name: ") or None
     age = int(input("Enter Age: ")) or None
@@ -398,6 +426,37 @@ def discharge_patient_transaction(connection):
         cursor.close()
 
 
+def custom_query(connection):
+    """Executes a user-provided SQL query."""
+
+    cursor = connection.cursor()
+    print("Enter your desired SQL query:")
+    user_query = input("> ")
+
+    try:
+        cursor.execute(user_query)
+
+        # Query type (SELECT)
+        if user_query.lower().startswith("select"):
+            df = pd.DataFrame(cursor.fetchall(), columns=[desc[0] for desc in cursor.description])
+            if df.empty:
+                print("No records found for the given query.")
+            else:
+                print("\nQuery Results:")
+                print(df.to_string(index=False))
+        
+        # Query types (UPDATE, DELETE, etc.)
+        else:
+            connection.commit()
+            print("Query executed successfully.")
+    
+    except Exception as e:
+        print(f"Error executing custom query: {e}")
+
+    finally:
+        cursor.close()
+
+
 def handle_choice(choice, connection):
     """Executes the selected functionality based on user choice."""
 
@@ -422,8 +481,10 @@ def handle_choice(choice, connection):
     elif choice == 10:
         discharge_patient_transaction(connection)
     elif choice == 11:
-        print("Error handling performed for all functions.")
+        custom_query(connection)
     elif choice == 12:
+        print("Error handling performed for all functions.")
+    elif choice == 13:
         print("Exiting the system...")
     else:
         print("Invalid choice. Please try again.")
@@ -435,8 +496,9 @@ if __name__ == "__main__":
         while True:
             choice = main_menu()
             handle_choice(choice, connection)
-            if (choice == 12):
+            if (choice == 13):
                 break
+        # insert_patients_from_csv(connection)
         close_connection(connection)
     else:
         print("Connection failed. Terminating program.")

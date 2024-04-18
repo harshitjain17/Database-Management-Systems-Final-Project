@@ -31,7 +31,7 @@ def main_menu():
     print("\nWelcome to the Hospital Management System!")
     print("1. Insert a new patient")
     print("2. Delete the expired insurance on file for a patient")
-    print("3. Update patient's discharge date")
+    print("3. Update the billing amount for a patient")
     print("4. Search for patients by the doctor assigned to them")
     print("5. Aggregate Functions on Patient table")
     print("6. Sorts patients by age in descending order")
@@ -175,26 +175,27 @@ def delete_patient_insurance(connection):
     cursor.close()
 
 
-def update_patient_discharge_date(connection):
-    """Allows user to update the discharge date for a patient."""
+def update_billing_amount(connection):
+    """Allows user to update the billing amount for a patient."""
 
     cursor = connection.cursor()
     admission_id = int(input("Enter the Admission ID: "))
-    new_discharge_date = input("Enter the new Discharge Date (MM/DD/YYYY): ")
-    update_stmt = f"UPDATE Admission SET DischargeDate = '{new_discharge_date}' WHERE AdmissionID = {admission_id}"
+    new_billing_amount = float(input("Enter the new Billing Amount: "))
+    update_stmt = f"UPDATE Billing SET BillingAmount = {new_billing_amount} WHERE AdmissionID = {admission_id}"
 
     try:
         cursor.execute(update_stmt)
         connection.commit()
         if cursor.rowcount > 0:
-            print(f"Discharge date for Admission ID {admission_id} updated successfully!")
+            print(f"Billing amount for Admission ID {admission_id} updated successfully!")
         else:
-            print(f"No patient found with Admission ID {admission_id}.")
+            print(f"No billing record found for Admission ID {admission_id}.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
-        
+
     cursor.close()
+
 
 
 def search_patients_by_doctor(connection):
@@ -385,7 +386,7 @@ def handle_choice(choice, connection):
     elif choice == 2:
         delete_patient_insurance(connection)
     elif choice == 3:
-        update_patient_discharge_date(connection)
+        update_billing_amount(connection)
     elif choice == 4:
         search_patients_by_doctor(connection)
     elif choice == 5:

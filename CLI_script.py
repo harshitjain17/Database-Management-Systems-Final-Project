@@ -1,7 +1,7 @@
 import psycopg2 as db_connect
 import pandas as pd
 import datetime
-import csv
+# import csv
 
 host_name="localhost"
 db_user="postgres"
@@ -38,7 +38,7 @@ def main_menu():
     print("6. Sorts patients by age in descending order")
     print("7. Joins Patients and Admission tables for emergency admissions with O- blood type")
     print("8. Groups patients based on user-specified columns")
-    print("9. Finds patients who have been admitted more than once using a subquery")
+    print("9. Finds patients with a length of stay exceeding a threshold using a subquery")
     print("10. Discharges a patient using a transaction")
     print("11. Bonus: Custom Query")
     print("12. Error Handling")
@@ -108,78 +108,78 @@ def insert_new_patient(connection):
         billing_amount = None
 
     # Insert data into BloodGroup table
-    blood_type_check_stmt = "SELECT BloodTypeID FROM BloodGroup WHERE BloodType = %s;"
-    cursor.execute(blood_type_check_stmt, (blood_type,))
+    blood_type_check_stmt = f"SELECT BloodTypeID FROM BloodGroup WHERE BloodType = {blood_type};"
+    cursor.execute(blood_type_check_stmt)
     existing_bloodtype_id = cursor.fetchone()
     if existing_bloodtype_id:
         bloodtype_id = existing_bloodtype_id[0]
     else:
-        bloodgroup_insert_stmt = "INSERT INTO BloodGroup (BloodType) VALUES (%s) RETURNING BloodTypeID;"
-        cursor.execute(bloodgroup_insert_stmt, (blood_type,))
+        bloodgroup_insert_stmt = f"INSERT INTO BloodGroup (BloodType) VALUES ({blood_type}) RETURNING BloodTypeID;"
+        cursor.execute(bloodgroup_insert_stmt)
         bloodtype_id = cursor.fetchone()[0]
 
     # Insert data into Patient table
-    patient_insert_stmt = "INSERT INTO Patient (Name, Age, Gender, BloodTypeID) VALUES (%s, %s, %s, %s) RETURNING PatientID;"
-    cursor.execute(patient_insert_stmt, (name, age, gender, bloodtype_id))
+    patient_insert_stmt = f"INSERT INTO Patient (Name, Age, Gender, BloodTypeID) VALUES ({name}, {age}, {gender}, {bloodtype_id}) RETURNING PatientID;"
+    cursor.execute(patient_insert_stmt)
     patient_id = cursor.fetchone()[0]
 
     # Insert data into InsuranceProvider (if provided)
-    insurance_insert_stmt = "INSERT INTO InsuranceProvider (PatientID, InsuranceProviderName) VALUES (%s, %s);"
-    cursor.execute(insurance_insert_stmt, (patient_id, insurance_provider))
+    insurance_insert_stmt = f"INSERT INTO InsuranceProvider (PatientID, InsuranceProviderName) VALUES ({patient_id}, {insurance_provider});"
+    cursor.execute(insurance_insert_stmt)
 
     # Insert data into Hospital table
-    hospital_check_stmt = "SELECT HospitalID FROM Hospital WHERE HospitalName = %s;"
-    cursor.execute(hospital_check_stmt, (hospital,))
+    hospital_check_stmt = f"SELECT HospitalID FROM Hospital WHERE HospitalName = {hospital};"
+    cursor.execute(hospital_check_stmt)
     existing_hospital_id = cursor.fetchone()
     if existing_hospital_id:
         hospital_id = existing_hospital_id[0]
     else:
-        hospital_insert_stmt = "INSERT INTO Hospital (HospitalName) VALUES (%s) RETURNING HospitalID;"
-        cursor.execute(hospital_insert_stmt, (hospital,))
+        hospital_insert_stmt = f"INSERT INTO Hospital (HospitalName) VALUES ({hospital}) RETURNING HospitalID;"
+        cursor.execute(hospital_insert_stmt)
         hospital_id = cursor.fetchone()[0]
 
     # Insert data into Room table
-    room_insert_stmt = "INSERT INTO Room (HospitalID, RoomNumber) VALUES (%s, %s);"
-    cursor.execute(room_insert_stmt, (hospital_id, room_number))
+    room_insert_stmt = f"INSERT INTO Room (HospitalID, RoomNumber) VALUES ({hospital_id}, {room_number});"
+    cursor.execute(room_insert_stmt)
 
     # Insert data into Doctor table
-    doctor_insert_stmt = "INSERT INTO Doctor (HospitalID, DoctorName) VALUES (%s, %s) RETURNING DoctorID;"
-    cursor.execute(doctor_insert_stmt, (hospital_id, doctor))
+    doctor_insert_stmt = f"INSERT INTO Doctor (HospitalID, DoctorName) VALUES ({hospital_id}, {doctor}) RETURNING DoctorID;"
+    cursor.execute(doctor_insert_stmt)
     doctor_id = cursor.fetchone()[0]
 
     # Insert data into Diagnosis table
-    diagnosis_insert_stmt = "INSERT INTO Diagnosis (MedicalCondition) VALUES (%s) RETURNING DiagnosisID;"
-    cursor.execute(diagnosis_insert_stmt, (medical_condition,))
+    diagnosis_insert_stmt = f"INSERT INTO Diagnosis (MedicalCondition) VALUES ({medical_condition}) RETURNING DiagnosisID;"
+    cursor.execute(diagnosis_insert_stmt)
     diagnosis_id = cursor.fetchone()[0]
 
     # Insert data into Medication table
-    medication_insert_stmt = "INSERT INTO Medication (DiagnosisID, MedicineName) VALUES (%s, %s) RETURNING MedicationID;"
-    cursor.execute(medication_insert_stmt, (diagnosis_id, medication))
+    medication_insert_stmt = f"INSERT INTO Medication (DiagnosisID, MedicineName) VALUES ({diagnosis_id}, {medication}) RETURNING MedicationID;"
+    cursor.execute(medication_insert_stmt)
     medication_id = cursor.fetchone()[0]
 
     # Insert data into Admission table
-    admission_insert_stmt = "INSERT INTO Admission (PatientID, DoctorID, HospitalID, MedicationID, AdmissionDate, DischargeDate) VALUES (%s, %s, %s, %s, %s, %s) RETURNING AdmissionID;"
-    cursor.execute(admission_insert_stmt, (patient_id, doctor_id, hospital_id, medication_id, admission_date, discharge_date))
+    admission_insert_stmt = f"INSERT INTO Admission (PatientID, DoctorID, HospitalID, MedicationID, AdmissionDate, DischargeDate) VALUES ({patient_id}, {doctor_id}, {hospital_id}, {medication_id}, {admission_date}, {discharge_date}) RETURNING AdmissionID;"
+    cursor.execute(admission_insert_stmt)
     admission_id = cursor.fetchone()[0]
 
     # Insert data into AdmissionType table
-    admission_type_insert_stmt = "INSERT INTO AdmissionType (AdmissionID, AdmissionType) VALUES (%s, %s);"
-    cursor.execute(admission_type_insert_stmt, (admission_id, admission_type))
+    admission_type_insert_stmt = f"INSERT INTO AdmissionType (AdmissionID, AdmissionType) VALUES ({admission_id}, {admission_type});"
+    cursor.execute(admission_type_insert_stmt)
 
     # Insert data into Billing table
-    billing_insert_stmt = "INSERT INTO Billing (AdmissionID, BillingAmount) VALUES (%s, %s);"
-    cursor.execute(billing_insert_stmt, (admission_id, billing_amount))
+    billing_insert_stmt = f"INSERT INTO Billing (AdmissionID, BillingAmount) VALUES ({admission_id}, {billing_amount});"
+    cursor.execute(billing_insert_stmt)
 
     # Insert data into TestResults table
-    test_result_insert_stmt = "INSERT INTO TestResult (AdmissionID, TestResults) VALUES (%s, %s);"
-    cursor.execute(test_result_insert_stmt, (admission_id, test_results))
+    test_result_insert_stmt = f"INSERT INTO TestResult (AdmissionID, TestResults) VALUES ({admission_id}, {test_results});"
+    cursor.execute(test_result_insert_stmt)
 
     # Insert data into DiagAdm (DiagnosisAdmission) table
-    diag_adm_insert_stmt = "INSERT INTO DiagAdm (AdmissionID, DiagnosisID) VALUES (%s, %s);"
-    cursor.execute(diag_adm_insert_stmt, (admission_id, diagnosis_id))
+    diag_adm_insert_stmt = f"INSERT INTO DiagAdm (AdmissionID, DiagnosisID) VALUES ({admission_id}, {diagnosis_id});"
+    cursor.execute(diag_adm_insert_stmt)
 
     connection.commit()
-    print("New patient added successfully!")
+    print(f"New patient with Patient ID = {patient_id} and Admission ID = {admission_id} added successfully!")
     cursor.close()
 
 
@@ -287,10 +287,10 @@ def sort_patients(connection):
     try:
         cursor.execute("SELECT * FROM Patient ORDER BY Age DESC;")
         patients = cursor.fetchall()
+        df = pd.DataFrame(patients, columns=[desc[0] for desc in cursor.description])
         print("\nPatients Sorted by Age (Descending):")
-        for patient in patients:
-            print(f"Patient ID: {patient[0]}, Name: {patient[1]}, Age: {patient[2]}")
-
+        print(df.to_string(index=False))
+        
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -305,7 +305,7 @@ def join_patients_emergency_o_neg(connection):
 
     try:
         cursor.execute("""
-        SELECT P.Name, A.AdmissionDate
+        SELECT P.Name, BG.BloodType, A.AdmissionDate, AT.AdmissionType
         FROM Patient P
         INNER JOIN Admission A ON P.PatientID = A.PatientID
         INNER JOIN AdmissionType AT ON A.AdmissionID = AT.AdmissionID
@@ -313,12 +313,11 @@ def join_patients_emergency_o_neg(connection):
         WHERE AT.AdmissionType = 'Emergency' AND BG.BloodType = 'O-';
         """)
         admissions = cursor.fetchall()
-        cursor.close()
 
         if admissions:
+            df = pd.DataFrame(admissions, columns=[desc[0] for desc in cursor.description])
             print("\nEmergency Admissions with Patients having Blood Type O-:")
-            for admission in admissions:
-                print(f"Patient Name: {admission[0]}, Admission Date: {admission[1]}")
+            print(df.to_string(index=False))
         else:
             print("No emergency admissions found for patients with Blood Type O-")
 
@@ -335,24 +334,15 @@ def group_patients(connection):
     cursor = connection.cursor()
 
     try:
-        column1 = input("Enter the first column to group by: ")
-        column2 = input("Enter the second column to group by (optional): ")
-        query = f"SELECT {column1}"
-        if column2:
-            query += f", {column2}"
-        query += " FROM Patient GROUP BY " + query.split("SELECT ")[-1]
+        column = input("Enter the column to group by: ")
+        query = f"SELECT AVG(P.Age), P.{column} FROM Patient P GROUP BY {column};"
         cursor.execute(query)
         data = cursor.fetchall()
 
         if data:
             df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])
             print("\nGrouping results:")
-            if column2:
-                grouped_data = df.groupby([column1, column2]).size().unstack()
-                print(grouped_data)
-            else:
-                grouped_data = df.groupby(column1).size()
-                print(grouped_data)
+            print(df.to_string(index=False))
         else:
             print("No data found in Patients table.")
     
@@ -364,23 +354,40 @@ def group_patients(connection):
         cursor.close()
 
 
-def find_readmitted_patients(connection):
-    """Finds patients who have been admitted more than once using a subquery."""
-
+def long_stay_patients(connection):
+    """Finds patients with a length of stay exceeding a threshold using a subquery."""
+    
     cursor = connection.cursor()
 
     try:
-        subquery = "SELECT PatientID FROM Admission GROUP BY PatientID HAVING COUNT(*) > 1"
-        query = f"SELECT * FROM Patient WHERE PatientID IN ({subquery});"
+        while True:
+            try:
+                threshold_days = int(input("Enter the minimum threshold for length of stay (in days): "))
+                if threshold_days <= 0:
+                    print("Invalid input: Threshold days must be a positive integer.")
+                else:
+                    break
+            except ValueError:
+                print("Invalid input: Please enter an integer value for threshold days.")
+
+        # Subquery to calculate average length of stay for each patient
+        subquery = "SELECT PatientID, AdmissionDate, DischargeDate, (DischargeDate - AdmissionDate) AS LengthOfStay FROM Admission"
+
+        # Main query to filter patients based on average length of stay
+        query = f"""
+        SELECT P.PatientID, P.Name, Stay.AdmissionDate, Stay.DischargeDate, Stay.LengthOfStay FROM Patient P
+        INNER JOIN ({subquery}) AS Stay ON P.PatientID = Stay.PatientID WHERE Stay.LengthOfStay > {threshold_days};
+        """
+
         cursor.execute(query)
         data = cursor.fetchall()
 
         if data:
-            print("\nPatients who have been readmitted:")
+            print(f"\nPatients with average length of stay exceeding {threshold_days} days:")
             df = pd.DataFrame(data, columns=[desc[0] for desc in cursor.description])
             print(df.to_string(index=False))
         else:
-            print("No patients found who have been readmitted.")
+            print(f"No patients found with average stay exceeding {threshold_days} days.")
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -477,7 +484,7 @@ def handle_choice(choice, connection):
     elif choice == 8:
         group_patients(connection)
     elif choice == 9:
-        find_readmitted_patients(connection)
+        long_stay_patients(connection)
     elif choice == 10:
         discharge_patient_transaction(connection)
     elif choice == 11:

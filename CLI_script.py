@@ -417,7 +417,7 @@ def discharge_patient_transaction(connection):
 
         # 2. Update discharge date in Admission table
         discharge_date = datetime.datetime.now().strftime('%m/%d/%Y')
-        update_admission_stmt = f"UPDATE Admission SET DischargeDate = {discharge_date} WHERE AdmissionID = {active_admission[0]};"
+        update_admission_stmt = f"UPDATE Admission SET DischargeDate = '{discharge_date}' WHERE AdmissionID = {active_admission[0]};"
         cursor.execute(update_admission_stmt)
 
         # All updates successful, commit the transaction
@@ -427,7 +427,7 @@ def discharge_patient_transaction(connection):
     except Exception as e:
         print(f"An error occurred: {e}")
         connection.rollback()
-        print("Transaction rolled back. Patient not discharged.")
+        print("Transaction rolled back.")
 
     finally:
         cursor.close()

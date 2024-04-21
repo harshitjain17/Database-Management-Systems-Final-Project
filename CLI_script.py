@@ -1,7 +1,7 @@
 import psycopg2 as db_connect
 import pandas as pd
 import datetime
-# import csv
+import csv
 
 host_name="localhost"
 db_user="postgres"
@@ -55,15 +55,15 @@ def main_menu():
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-# def insert_patients_from_csv(connection):
-#     """Inserts patient data from a CSV file into the database using insert_new_patient."""
+def insert_patients_from_csv(connection):
+    """Inserts patient data from a CSV file into the database using insert_new_patient."""
     
-#     with open('Healthcare-Dataset.csv', 'r') as csvfile:
-#         reader = csv.reader(csvfile)
-#         next(reader)
+    with open('Healthcare-Dataset.csv', 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader)
 
-#         for csv_row in reader:
-#             insert_new_patient(connection, csv_row)
+        for csv_row in reader:
+            insert_new_patient(connection, csv_row)
 
 def insert_new_patient(connection):
     """Prompts user for data and inserts it into all 14 relations."""

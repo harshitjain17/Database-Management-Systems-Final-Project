@@ -187,16 +187,17 @@ def delete_patient_insurance(connection):
     """Deletes the insurance provider for a specific patient."""
 
     cursor = connection.cursor()
-    patient_id = int(input("Enter the Patient ID: "))
-    delete_stmt = f"DELETE FROM InsuranceProvider WHERE PatientID = {patient_id}"
-
+    
     try:
+        patient_id = int(input("Enter the Patient ID: "))
+        delete_stmt = f"DELETE FROM InsuranceProvider WHERE PatientID = {patient_id}"
         cursor.execute(delete_stmt)
         connection.commit()
         if (cursor.rowcount == 1):
             print(f"Insurance provider for Patient ID {patient_id} deleted successfully!")
         else:
             print(f"No insurance provider found for Patient ID {patient_id}.")
+    
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -208,11 +209,11 @@ def update_billing_amount(connection):
     """Allows user to update the billing amount for a patient."""
 
     cursor = connection.cursor()
-    admission_id = int(input("Enter the Admission ID: "))
-    new_billing_amount = float(input("Enter the new Billing Amount: "))
-    update_stmt = f"UPDATE Billing SET BillingAmount = {new_billing_amount} WHERE AdmissionID = {admission_id}"
 
     try:
+        admission_id = int(input("Enter the Admission ID: "))
+        new_billing_amount = float(input("Enter the new Billing Amount: "))
+        update_stmt = f"UPDATE Billing SET BillingAmount = {new_billing_amount} WHERE AdmissionID = {admission_id}"
         cursor.execute(update_stmt)
         connection.commit()
         if cursor.rowcount > 0:
@@ -256,15 +257,15 @@ def patient_aggregates(connection):
     cursor = connection.cursor()
     print("1. Count Total Patients")
     print("2. Find Average Age of Patients")
-    choice = input("Enter your choice (1-2): ")
     
     try:
-        if choice == '1':
+        choice = int(input("Enter your choice (1-2): "))
+        if choice == 1:
             cursor.execute("SELECT COUNT(*) FROM Patient;")
             count = cursor.fetchone()[0]
             print("Total Patients:", count)
         
-        elif choice == '2':
+        elif choice == 2:
             cursor.execute("SELECT AVG(Age) FROM Patient;")
             avg_age = cursor.fetchone()[0]
             print("Average Patient Age:", avg_age)        

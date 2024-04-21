@@ -1,9 +1,9 @@
 # Hospital Management System CLI Documentation
 
 ## Table of Contents
-- [Introduction](#introduction)
-- [Getting Started](#getting-started)
-- [Main Menu Options](#main-menu-options)
+- [A. Introduction](#a-introduction)
+- [B. Getting Started](#b-getting-started)
+- [C. Main Menu Options](#c-main-menu-options)
   - [1. Insert a new patient](#1-insert-a-new-patient)
   - [2. Delete the expired insurance on file for a patient](#2-delete-the-expired-insurance-on-file-for-a-patient)
   - [3. Update the billing amount for a patient](#3-update-the-billing-amount-for-a-patient)
@@ -17,23 +17,23 @@
   - [11. Bonus: Custom Query](#11-bonus-custom-query)
   - [12. Error Handling](#12-error-handling)
   - [13. Exit](#13-exit)
-- [Conclusion](#conclusion)
+- [D. Conclusion](#d-conclusion)
 
 
 
-## Introduction
+## A. Introduction
 The Hospital Management System CLI is a Python-based interface for interacting with a PostgreSQL database. It allows users to perform various operations related to patient management, including adding new patients, updating billing information, searching for patients by doctor, and more.
 
 ***
 
-## Getting Started
+## B. Getting Started
 Before using the CLI, ensure that you have Python installed on your system along with the required dependencies listed in the requirements.txt file. Additionally, make sure you have PostgreSQL installed and running, with the database schema set up according to the provided SQL scripts. To start the CLI, run the `main.py` script in your terminal.
 
 `python main.py`
 
 ***
 
-## Main Menu Options
+## C. Main Menu Options
 
 ### 1. Insert a new patient
    This option allows users to insert information for a new patient into the database.
@@ -163,6 +163,6 @@ Before using the CLI, ensure that you have Python installed on your system along
 
 ***
 
-## Conclusion
+## D. Conclusion
 
 The Hospital Management System CLI provides a convenient interface for managing patient data in a PostgreSQL database. With a range of functionalities available through simple CLI commands, users can efficiently perform operations such as patient insertion, update, search, and more. For any queries or issues, refer to the documentation or contact the system administrator.

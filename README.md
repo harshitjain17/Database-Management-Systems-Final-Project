@@ -1,23 +1,24 @@
-# HOSPITAL MANAGEMENT SYSTEM CLI DOCUMENTATION
+# Hospital Management System CLI Documentation
 
 ## Table of Contents
-    A. Introduction
-    B. Getting Started
-    C. Main Menu Options
-        1. Insert a new patient
-        2. Delete the expired insurance on file for a patient
-        3. Update the billing amount for a patient
-        4. Search for patients by the doctor assigned to them
-        5. Aggregate Functions on Patient table
-        6. Sort patients by age in descending order
-        7. Joins Patients and Admission tables for emergency admissions with O- blood type
-        8. Group patients based on user-specified columns
-        9. Find patients with a length of stay exceeding a threshold using a subquery
-        10. Discharge a patient using a transaction
-        11. Bonus: Custom Query
-        12. Error Handling
-        13. Exit
-    D. Conclusion
+- [Introduction](#introduction)
+- [Getting Started](#getting-started)
+- [Main Menu Options](#main-menu-options)
+  1. [Insert a new patient](#insert-a-new-patient)
+  2. [Delete the expired insurance on file for a patient](#delete-the-expired-insurance-on-file-for-a-patient)
+  3. [Update the billing amount for a patient](#update-the-billing-amount-for-a-patient)
+  4. [Search for patients by the doctor assigned to them](#search-for-patients-by-the-doctor-assigned-to-them)
+  5. [Aggregate Functions on Patient table](#aggregate-functions-on-patient-table)
+  6. [Sort patients by age in descending order](#sort-patients-by-age-in-descending-order)
+  7. [Joins Patients and Admission tables for emergency admissions with O- blood type](#joins-patients-and-admission-tables-for-emergency-admissions-with-o--blood-type)
+  8. [Group patients based on user-specified columns](#group-patients-based-on-user-specified-columns)
+  9. [Find patients with a length of stay exceeding a threshold using a subquery](#find-patients-with-a-length-of-stay-exceeding-a-threshold-using-a-subquery)
+  10. [Discharge a patient using a transaction](#discharge-a-patient-using-a-transaction)
+  11. [Bonus: Custom Query](#bonus-custom-query)
+  12. [Error Handling](#error-handling)
+  13. [Exit](#exit)
+- [Conclusion](#conclusion)
+
 
 
 ## A. Introduction

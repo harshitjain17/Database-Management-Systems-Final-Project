@@ -27,9 +27,26 @@ The Hospital Management System CLI is a Python-based interface for interacting w
 ***
 
 ## B. Getting Started
-Before using the CLI, ensure that you have Python installed on your system along with the required dependencies listed in the requirements.txt file. Additionally, make sure you have PostgreSQL installed and running, with the database schema set up according to the provided SQL scripts. To start the CLI, run the `main.py` script in your terminal.
 
-`python main.py`
+### Prerequisites:
+- Python 3.x ([Download Python](https://www.python.org/downloads/))
+- PostgreSQL database server ([Download PostgreSQL](https://www.postgresql.org/download/))
+- psycopg2 library (installation using `pip install psycopg2`)
+
+### 1. Clone the Repository:
+- Sign up for a free GitHub account at [GitHub](https://github.com) if you don't have one already.
+- Once logged in, navigate to the repository containing the hospital management system code.
+- Click on the green "Clone or download" button and select "Clone with HTTPS".
+- Use the provided URL to clone the repository to your local machine using a Git client or the command line:
+   `git clone https://github.com/harshitjain17/Database-Management-Systems-CMPSC-431W-Final-Project.git`
+
+To start the CLI, run the `main.py` script in your terminal using the following command: `python main.py`
+
+### 2. Database Script:
+   - Locate the file named `project.sql` within the repository. This file contains the SQL statements to create the database schema.
+   - Open the `project.sql` file in a text editor and use those commands in PostgreSQL to create the tables.
+   - Run the following command to execute the dump.sql script and create the database schema in your newly created database:
+   `psql -U <your_username> -d <your_database_name> < dump.sql`
 
 ***
 

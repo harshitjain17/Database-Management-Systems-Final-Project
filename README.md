@@ -38,7 +38,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 1. Insert a new patient
    This option allows users to insert information for a new patient into the database.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 1 from the main menu.
    - Follow the prompts to enter the required information for the new patient, such as name, age, gender, etc.
    - Press Enter for optional fields or provide the requested information.
@@ -49,7 +49,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 2. Delete the expired insurance on file for a patient
    This option allows users to delete the expired insurance information for a specific patient.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 2 from the main menu.
    - Enter the patient ID for which you want to delete the expired insurance.
    - Press Enter to execute the deletion.
@@ -60,7 +60,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 3. Update the billing amount for a patient
    This option allows users to update the billing amount for a patient's admission.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 3 from the main menu.
    - Enter the admission ID for which you want to update the billing amount.
    - Enter the new billing amount.
@@ -72,7 +72,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 4. Search for patients by the doctor assigned to them
    This option allows users to search for patients based on the doctor assigned to them.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 4 from the main menu.
    - Enter the full name of the doctor.
    - Press Enter to execute the search.
@@ -83,7 +83,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 5. Aggregate Functions on Patient table
    This option provides various aggregate functions on the patient table, such as counting total patients and finding the average age of patients.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 5 from the main menu.
    - Select the desired option from the sub-menu.
    - Press Enter to execute the chosen aggregate function.
@@ -94,7 +94,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 6. Sort patients by age in descending order
    This option allows users to sort patients by age in descending order.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 6 from the main menu.
    - The CLI will display the sorted list of patients along with their details.
 
@@ -104,7 +104,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 7. Joins Patients and Admission tables for emergency admissions with O- blood type
    This option joins the Patients and Admission tables to find emergency admissions with O- blood type.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 7 from the main menu.
    - The CLI will display emergency admissions with patients having O- blood type along with their details.
 
@@ -114,7 +114,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 8. Group patients based on user-specified columns
    This option allows users to group patients based on user-specified columns and find the average age of each group.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 8 from the main menu.
    - Enter the column name to group by.
    - The CLI will display the average age of patients in each group.
@@ -125,7 +125,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 9. Find patients with a length of stay exceeding a threshold using a subquery
    This option finds patients with a length of stay exceeding a user-specified threshold using a subquery.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 9 from the main menu.
    - Enter the minimum threshold for length of stay in days.
    - The CLI will display patients with a length of stay exceeding the specified threshold.
@@ -136,7 +136,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 10. Discharge a patient using a transaction
    This option allows users to discharge a patient using a transaction.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 10 from the main menu.
    - Enter the patient ID of the patient to be discharged.
    - The CLI will confirm the successful discharge of the patient.
@@ -147,7 +147,7 @@ Before using the CLI, ensure that you have Python installed on your system along
 ### 11. Bonus: Custom Query
    This option allows users to execute custom SQL queries on the database.
 
-   <u>Usage</u>
+   <u>Usage:</u>
    - Choose option 11 from the main menu.
    - Enter the desired SQL query when prompted.
    - The CLI will execute the query and display the results, if any.

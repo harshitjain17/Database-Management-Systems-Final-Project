@@ -94,7 +94,7 @@ def insert_new_patient(connection):
     blood_type = input("Enter Blood Type: ") or None
     medical_condition = input("Enter Medical Condition (optional): ")  or None
     admission_date = input("Enter Date of Admission (MM/DD/YYYY): ") or None
-    admission_type = input("Enter Admission Type: ") or None
+    admission_type = input("Enter Admission Type (Elective/Emergency/Urgent): ") or None
     doctor = input("Enter Doctor Name (optional): ") or None
     hospital = input("Enter Hospital Name: ") or None
     insurance_provider = input("Enter Insurance Provider (optional): ") or None
@@ -108,78 +108,72 @@ def insert_new_patient(connection):
         billing_amount = None
 
     # Insert data into BloodGroup table
-    blood_type_check_stmt = f"SELECT BloodTypeID FROM BloodGroup WHERE BloodType = {blood_type};"
-    cursor.execute(blood_type_check_stmt)
+    blood_type_check_stmt = "SELECT BloodTypeID FROM BloodGroup WHERE BloodType = %s;"
+    cursor.execute(blood_type_check_stmt, (blood_type,))
     existing_bloodtype_id = cursor.fetchone()
     if existing_bloodtype_id:
         bloodtype_id = existing_bloodtype_id[0]
     else:
-        bloodgroup_insert_stmt = f"INSERT INTO BloodGroup (BloodType) VALUES ({blood_type}) RETURNING BloodTypeID;"
-        cursor.execute(bloodgroup_insert_stmt)
+        bloodgroup_insert_stmt = "INSERT INTO BloodGroup (BloodType) VALUES (%s) RETURNING BloodTypeID;"
+        cursor.execute(bloodgroup_insert_stmt, (blood_type,))
         bloodtype_id = cursor.fetchone()[0]
 
     # Insert data into Patient table
-    patient_insert_stmt = f"INSERT INTO Patient (Name, Age, Gender, BloodTypeID) VALUES ({name}, {age}, {gender}, {bloodtype_id}) RETURNING PatientID;"
-    cursor.execute(patient_insert_stmt)
+    patient_insert_stmt = "INSERT INTO Patient (Name, Age, Gender, BloodTypeID) VALUES (%s, %s, %s, %s) RETURNING PatientID;"
+    cursor.execute(patient_insert_stmt, (name, age, gender, bloodtype_id))
     patient_id = cursor.fetchone()[0]
 
     # Insert data into InsuranceProvider (if provided)
-    insurance_insert_stmt = f"INSERT INTO InsuranceProvider (PatientID, InsuranceProviderName) VALUES ({patient_id}, {insurance_provider});"
-    cursor.execute(insurance_insert_stmt)
+    insurance_insert_stmt = "INSERT INTO InsuranceProvider (PatientID, InsuranceProviderName) VALUES (%s, %s);"
+    cursor.execute(insurance_insert_stmt, (patient_id, insurance_provider))
 
     # Insert data into Hospital table
-    hospital_check_stmt = f"SELECT HospitalID FROM Hospital WHERE HospitalName = {hospital};"
-    cursor.execute(hospital_check_stmt)
-    existing_hospital_id = cursor.fetchone()
-    if existing_hospital_id:
-        hospital_id = existing_hospital_id[0]
-    else:
-        hospital_insert_stmt = f"INSERT INTO Hospital (HospitalName) VALUES ({hospital}) RETURNING HospitalID;"
-        cursor.execute(hospital_insert_stmt)
-        hospital_id = cursor.fetchone()[0]
+    hospital_insert_stmt = "INSERT INTO Hospital (HospitalName) VALUES (%s) RETURNING HospitalID;"
+    cursor.execute(hospital_insert_stmt, (hospital,))
+    hospital_id = cursor.fetchone()[0]
 
     # Insert data into Room table
-    room_insert_stmt = f"INSERT INTO Room (HospitalID, RoomNumber) VALUES ({hospital_id}, {room_number});"
-    cursor.execute(room_insert_stmt)
+    room_insert_stmt = "INSERT INTO Room (HospitalID, RoomNumber) VALUES (%s, %s);"
+    cursor.execute(room_insert_stmt, (hospital_id, room_number))
 
     # Insert data into Doctor table
-    doctor_insert_stmt = f"INSERT INTO Doctor (HospitalID, DoctorName) VALUES ({hospital_id}, {doctor}) RETURNING DoctorID;"
-    cursor.execute(doctor_insert_stmt)
+    doctor_insert_stmt = "INSERT INTO Doctor (HospitalID, DoctorName) VALUES (%s, %s) RETURNING DoctorID;"
+    cursor.execute(doctor_insert_stmt, (hospital_id, doctor))
     doctor_id = cursor.fetchone()[0]
 
     # Insert data into Diagnosis table
-    diagnosis_insert_stmt = f"INSERT INTO Diagnosis (MedicalCondition) VALUES ({medical_condition}) RETURNING DiagnosisID;"
-    cursor.execute(diagnosis_insert_stmt)
+    diagnosis_insert_stmt = "INSERT INTO Diagnosis (MedicalCondition) VALUES (%s) RETURNING DiagnosisID;"
+    cursor.execute(diagnosis_insert_stmt, (medical_condition,))
     diagnosis_id = cursor.fetchone()[0]
 
     # Insert data into Medication table
-    medication_insert_stmt = f"INSERT INTO Medication (DiagnosisID, MedicineName) VALUES ({diagnosis_id}, {medication}) RETURNING MedicationID;"
-    cursor.execute(medication_insert_stmt)
+    medication_insert_stmt = "INSERT INTO Medication (DiagnosisID, MedicineName) VALUES (%s, %s) RETURNING MedicationID;"
+    cursor.execute(medication_insert_stmt, (diagnosis_id, medication))
     medication_id = cursor.fetchone()[0]
 
     # Insert data into Admission table
-    admission_insert_stmt = f"INSERT INTO Admission (PatientID, DoctorID, HospitalID, MedicationID, AdmissionDate, DischargeDate) VALUES ({patient_id}, {doctor_id}, {hospital_id}, {medication_id}, {admission_date}, {discharge_date}) RETURNING AdmissionID;"
-    cursor.execute(admission_insert_stmt)
+    admission_insert_stmt = "INSERT INTO Admission (PatientID, DoctorID, HospitalID, MedicationID, AdmissionDate, DischargeDate) VALUES (%s, %s, %s, %s, %s, %s) RETURNING AdmissionID;"
+    cursor.execute(admission_insert_stmt, (patient_id, doctor_id, hospital_id, medication_id, admission_date, discharge_date))
     admission_id = cursor.fetchone()[0]
 
     # Insert data into AdmissionType table
-    admission_type_insert_stmt = f"INSERT INTO AdmissionType (AdmissionID, AdmissionType) VALUES ({admission_id}, {admission_type});"
-    cursor.execute(admission_type_insert_stmt)
+    admission_type_insert_stmt = "INSERT INTO AdmissionType (AdmissionID, AdmissionType) VALUES (%s, %s);"
+    cursor.execute(admission_type_insert_stmt, (admission_id, admission_type))
 
     # Insert data into Billing table
-    billing_insert_stmt = f"INSERT INTO Billing (AdmissionID, BillingAmount) VALUES ({admission_id}, {billing_amount});"
-    cursor.execute(billing_insert_stmt)
+    billing_insert_stmt = "INSERT INTO Billing (AdmissionID, BillingAmount) VALUES (%s, %s);"
+    cursor.execute(billing_insert_stmt, (admission_id, billing_amount))
 
     # Insert data into TestResults table
-    test_result_insert_stmt = f"INSERT INTO TestResult (AdmissionID, TestResults) VALUES ({admission_id}, {test_results});"
-    cursor.execute(test_result_insert_stmt)
+    test_result_insert_stmt = "INSERT INTO TestResult (AdmissionID, TestResults) VALUES (%s, %s);"
+    cursor.execute(test_result_insert_stmt, (admission_id, test_results))
 
     # Insert data into DiagAdm (DiagnosisAdmission) table
-    diag_adm_insert_stmt = f"INSERT INTO DiagAdm (AdmissionID, DiagnosisID) VALUES ({admission_id}, {diagnosis_id});"
-    cursor.execute(diag_adm_insert_stmt)
+    diag_adm_insert_stmt = "INSERT INTO DiagAdm (AdmissionID, DiagnosisID) VALUES (%s, %s);"
+    cursor.execute(diag_adm_insert_stmt, (admission_id, diagnosis_id))
 
     connection.commit()
-    print(f"New patient with Patient ID = {patient_id} and Admission ID = {admission_id} added successfully!")
+    print("New patient added successfully!")
     cursor.close()
 
 

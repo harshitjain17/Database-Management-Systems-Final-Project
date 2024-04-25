@@ -100,7 +100,7 @@ def insert_new_patient(connection):
     insurance_provider = input("Enter Insurance Provider (optional): ") or None
     room_number = int(input("Enter Room Number (optional): ")) or None
     discharge_date = input("Enter Discharge Date (MM/DD/YYYY) (optional): ") or None
-    medication = input("Enter Medication (optional): ") or None
+    medication = input("Enter Medication: ") or None
     test_results = input("Enter Test Results (optional): ") or None
     try:
         billing_amount = float(input("Enter Billing Amount (optional): ")) or None
@@ -173,7 +173,7 @@ def insert_new_patient(connection):
     cursor.execute(diag_adm_insert_stmt, (admission_id, diagnosis_id))
 
     connection.commit()
-    print("New patient added successfully!")
+    print(f"New patient with the Patient ID = {patient_id} and Admission ID = {admission_id} added successfully!")
     cursor.close()
 
 

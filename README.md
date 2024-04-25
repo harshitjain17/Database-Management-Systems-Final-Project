@@ -40,14 +40,15 @@ The Hospital Management System CLI is a Python-based interface for interacting w
 - Use the provided URL to clone the repository to your local machine using a Git client or the command line:
    `git clone https://github.com/harshitjain17/Database-Management-Systems-CMPSC-431W-Final-Project.git`
 
-To start the CLI, run the `main.py` script in your terminal using the following command: `python main.py`
-
 ### 2. Database Script:
-   - Locate the file named `project.sql` within the repository. This file contains the SQL statements to create the database schema.
-   - Open the `project.sql` file in a text editor and use those commands in PostgreSQL to create the tables.
-   - Run the following command to execute the dump.sql script and create the database schema in your newly created database:
-   `psql -U <your_username> -d <your_database_name> < dump.sql`
+- Locate the file named `project.sql` within the repository. This file contains the SQL statements to create the database schema.
+- Open the `project.sql` file in a text editor and use those commands in PostgreSQL to create the tables.
+- Run the following command to execute the dump.sql script and create the database schema in your newly created database:
+   `psql -U <your_username> -d <your_database_name> < project.sql`
 
+### 3. Start Using the CLI:
+- To start the CLI, run the `main.py` script in your terminal using the following command: `python main.py`
+- Refer to the Section C for detailed instructions on using the CLI interface functionalities.
 ***
 
 ## C. Main Menu Options

@@ -43,7 +43,7 @@ The Hospital Management System CLI is a Python-based interface for interacting w
 ### 2. Database Script:
 - Locate the file named `project.sql` within the repository. This file contains the SQL statements to create the database schema.
 - Open the `project.sql` file in a text editor and use those commands in PostgreSQL to create the tables.
-- Run the following command to execute the dump.sql script and create the database schema in your newly created database:
+- Run the following command to execute the project.sql script and create the database schema in your newly created database:
    `psql -U <your_username> -d <your_database_name> < project.sql`
 
 ### 3. Start Using the CLI:
